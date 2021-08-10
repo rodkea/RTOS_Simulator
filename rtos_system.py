@@ -84,4 +84,3 @@ if __name__ == '__main__':
     print('Liu-Laylnad: ', system2.liu_layland())
     print('Bini: ', system2.bini())
 
-#Test
