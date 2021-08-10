@@ -83,3 +83,5 @@ if __name__ == '__main__':
     print('FU: ', system2.utilization_factor())
     print('Liu-Laylnad: ', system2.liu_layland())
     print('Bini: ', system2.bini())
+
+#Test
