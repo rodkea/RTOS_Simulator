@@ -1,3 +1,5 @@
+from math import ceil
+
 class Rate_Monotonic():
 
     def __init__(self, tasks : list , ticks : int) -> None:
@@ -20,6 +22,23 @@ class Rate_Monotonic():
         for task in self._tasks:
             u *= (task.ex_time / task.period) + 1
         return u <= 2
+
+    def rta(self, verbose : bool=True) -> bool:
+        for task in self._tasks:
+            tq = 0
+            while tq < ticks:
+                cumsum = 0 # ver nombre variable
+                for task in self._task:
+                    cumsum += ceil(tq / task.period) * task.ex_time
+                if (tq + 1) == task.ex_time + cumsum:
+                    print(tq)
+                    break
+                else:
+                    tq += 1
+                
+            
+
+                
 
     @property
     def ticks(self):
@@ -83,4 +102,5 @@ if __name__ == '__main__':
     print('FU: ', system2.utilization_factor())
     print('Liu-Laylnad: ', system2.liu_layland())
     print('Bini: ', system2.bini())
+    system.rta()
 
