@@ -2,9 +2,12 @@ from math import ceil
 
 class Rate_Monotonic():
 
-    def __init__(self, tasks : list , ticks : int) -> None:
+    def __init__(self, ticks : int, tasks : list = []) -> None:
         self._ticks = ticks
         self._tasks = tasks
+
+    def add_task(self, task):
+        self._tasks.append(task)
 
     def utilization_factor(self) -> float:
         u = 0
@@ -23,22 +26,29 @@ class Rate_Monotonic():
             u *= (task.ex_time / task.period) + 1
         return u <= 2
 
-    def rta(self, verbose : bool=True) -> bool:
-        for task in self._tasks:
+    def rta(self) -> bool:
+        n_iteration = 0        
+        for n, task in enumerate(self._tasks):
             tq = 0
-            while tq < ticks:
-                cumsum = 0 # ver nombre variable
-                for task in self._task:
-                    cumsum += ceil(tq / task.period) * task.ex_time
-                if (tq + 1) == task.ex_time + cumsum:
-                    print(tq)
-                    break
-                else:
-                    tq += 1
-                
             
-
-                
+            print('Task:',n+1)
+            if n == 0:
+                print('PF:',task._ex_time)
+            else:
+                while tq <= task._deadline:
+                    cumsum = 0
+                    n_iteration += 1                 
+                    for i in range(n):
+                        cumsum += ceil(tq / self._tasks[i].period) * self._tasks[i].ex_time                                    
+                    if tq == task.ex_time + cumsum:
+                        print('PF:',tq)                                                            
+                        break
+                    else:                    
+                        tq = task.ex_time + cumsum
+                if tq > task._deadline:
+                    print('No es programable  Numero de iteraciones:')
+        print('Número de iteraciones:', n_iteration)
+            
 
     @property
     def ticks(self):
@@ -92,15 +102,10 @@ class Task():
     
     
 if __name__ == '__main__':
-    tasks = [Task(1,2,2,1), Task(1,3,3,2), Task(1,6,6,3)]    
-    system = Rate_Monotonic(tasks, 10)
-    tasks2 = [Task(1,3,3,1), Task(1,4,4,2), Task(1,6,6,3)]
-    system2 = Rate_Monotonic(tasks2, 10)  
+    tasks = [Task(1,3,3,1), Task(1,4,4,2), Task(1,6,6,3)]    
+    system = Rate_Monotonic(10, tasks)
     print('FU: ',system.utilization_factor())
     print('Liu-Laylnad: ', system.liu_layland())
-    print('Bini: ', system.bini())
-    print('FU: ', system2.utilization_factor())
-    print('Liu-Laylnad: ', system2.liu_layland())
-    print('Bini: ', system2.bini())
+    print('Bini: ', system.bini())    
     system.rta()
 
