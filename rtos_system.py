@@ -48,6 +48,29 @@ class Rate_Monotonic():
                 if tq > task._deadline:
                     print('No es programable  Numero de iteraciones:')
         print('Número de iteraciones:', n_iteration)
+
+    def rta2(self) -> bool:
+        n_iteration = 0
+        tq = 0        
+        for n, task in enumerate(self._tasks):                        
+            print('Task:',n+1)
+            if n == 0:
+                tq = task._ex_time
+                print('PF:',task._ex_time)
+            else:
+                while tq <= task._deadline:
+                    cumsum = 0
+                    n_iteration += 1                 
+                    for i in range(n):
+                        cumsum += ceil(tq / self._tasks[i].period) * self._tasks[i].ex_time                                    
+                    if tq == task.ex_time + cumsum:
+                        print('PF:',tq)                                                            
+                        break
+                    else:                    
+                        tq = task.ex_time + cumsum
+                if tq > task._deadline:
+                    print('No es programable  Numero de iteraciones:')
+        print('Número de iteraciones:', n_iteration)
             
 
     @property
@@ -107,5 +130,5 @@ if __name__ == '__main__':
     print('FU: ',system.utilization_factor())
     print('Liu-Laylnad: ', system.liu_layland())
     print('Bini: ', system.bini())    
-    system.rta()
+    system.rta2()
 
