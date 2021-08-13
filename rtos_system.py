@@ -134,5 +134,5 @@ if __name__ == '__main__':
         print('Cota de Liu:', system.liu_layland()[1])
         print('Cota de Bini:', system.bini()[1])    
         system.rta2()
-        #print(system.hyperperiod())
+        
 
