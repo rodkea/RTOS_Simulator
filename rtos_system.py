@@ -81,6 +81,7 @@ class Rate_Monotonic():
             print('Numero de funciones techo:', ceil_count)
 
     def rta2(self, verbose : bool=False) -> None:
+        pass
         
 
     def hyperperiod(self):
