@@ -26,11 +26,11 @@ class Rate_Monotonic():
             u *= (task.ex_time / task.period) + 1
         return [u <= 2, u]
 
-    def rta(self) -> bool:
+    def joshep_pandya(self, verbose : bool=False) -> bool:
         n_iteration = 0        
         for n, task in enumerate(self._tasks):
             tq = 0
-            
+            ceil_count = 0            
             print('Task:',n+1)
             if n == 0:
                 print('PF:',task._ex_time)
@@ -39,6 +39,7 @@ class Rate_Monotonic():
                     cumsum = 0
                     n_iteration += 1                 
                     for i in range(n):
+                        ceil_count += 1
                         cumsum += ceil(tq / self._tasks[i].period) * self._tasks[i].ex_time                                    
                     if tq == task.ex_time + cumsum:
                         print('PF:',tq)                                                            
@@ -47,11 +48,14 @@ class Rate_Monotonic():
                         tq = task.ex_time + cumsum
                 if tq > task._deadline:
                     print('No es programable  Numero de iteraciones:')
-        print('Número de iteraciones:', n_iteration)
+        if verbose:
+            print('Número de iteraciones:', n_iteration)
+            print('Numero de funciones techo:', ceil_count)
 
-    def rta2(self) -> bool:
+    def rta(self, verbose : bool=False) -> bool:
         n_iteration = 0
-        tq = 0        
+        tq = 0
+        ceil_count = 0        
         for n, task in enumerate(self._tasks):                        
             print('Task:',n+1)
             if n == 0:
@@ -63,6 +67,7 @@ class Rate_Monotonic():
                     cumsum = 0
                     n_iteration += 1                 
                     for i in range(n):
+                        ceil_count += 1
                         cumsum += ceil(tq / self._tasks[i].period) * self._tasks[i].ex_time                                    
                     if tq == task.ex_time + cumsum:
                         print('PF:',tq)                                                            
@@ -71,8 +76,10 @@ class Rate_Monotonic():
                         tq = task.ex_time + cumsum
                 if tq > task.deadline:
                     print('No es programable')
-        print('Número de iteraciones:', n_iteration)
-            
+        if verbose:
+            print('Número de iteraciones:', n_iteration)
+            print('Numero de funciones techo:', ceil_count)
+
     def hyperperiod(self):
         return lcm.reduce([x.period for x in self._tasks])
 
@@ -133,6 +140,6 @@ if __name__ == '__main__':
         print('Factor de utilización:', system.utilization_factor())
         print('Cota de Liu:', system.liu_layland()[1])
         print('Cota de Bini:', system.bini()[1])    
-        system.rta2()
+        system.rta(verbose=True)
         
 
