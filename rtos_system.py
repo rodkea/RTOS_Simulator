@@ -9,24 +9,24 @@ class Rate_Monotonic():
     def add_task(self, task):
         self._tasks.append(task)
 
-    def utilization_factor(self) -> float:
+    def utilization_factor(self) -> float:        
         u = 0
         for task in self._tasks:
             u += task.ex_time / task.period
         return round(u, 15)
 
-    def liu_layland(self) -> list:        
+    def liu_layland(self) -> list:                
         n = len(self._tasks)
         test_condition = n * (2 ** (1/n) - 1)
         return [self.utilization_factor() <= test_condition, test_condition]
 
-    def bini(self) -> list:
+    def bini(self) -> list:        
         u = 1
         for task in self._tasks:
             u *= (task.ex_time / task.period) + 1
         return [u <= 2, u]
 
-    def joshep_pandya(self, verbose : bool=False) -> bool:
+    def joshep_pandya(self, verbose : bool=False) -> None:
         n_iteration = 0        
         for n, task in enumerate(self._tasks):
             tq = 0
@@ -80,10 +80,13 @@ class Rate_Monotonic():
             print('Número de iteraciones:', n_iteration)
             print('Numero de funciones techo:', ceil_count)
 
+    def rta2(self, verbose : bool=False) -> None:
+        
+
     def hyperperiod(self):
         return lcm.reduce([x.period for x in self._tasks])
 
-
+    
     @property
     def ticks(self):
         return self._ticks    
