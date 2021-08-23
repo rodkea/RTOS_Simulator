@@ -76,13 +76,47 @@ class Rate_Monotonic():
                         tq = task.ex_time + cumsum
                 if tq > task.deadline:
                     print('No es programable')
+                    return False
         if verbose:
             print('Número de iteraciones:', n_iteration)
             print('Numero de funciones techo:', ceil_count)
 
     def rta2(self, verbose : bool=False) -> None:
-        pass
-        
+        n_iteration = 0
+        tq = 0
+        ceil_count = 0                         
+        for n, task in enumerate(self._tasks):
+            a_coeff = [task._ex_time for task in self._tasks]                         
+            print('Task:',n+1)
+            if n == 0:
+                tq = task._ex_time
+                print('PF:',task.ex_time)
+            else:
+                tq += task._ex_time
+                while tq <= task.deadline:
+                    cumsum = 0
+                    n_iteration += 1                 
+                    for i in range(n):
+                        ceil_count += 1
+                        a = ceil(tq / self._tasks[i].period) * self._tasks[i].ex_time
+                        cumsum += a
+                        if a_coeff[i] < a:                            
+                            a_coeff[i] = a                            
+                            tq += a - a_coeff[n]                                    
+                    if tq == task.ex_time + cumsum:
+                        print('Tq',tq)
+                        print('PF:',tq)                                                            
+                        break
+                    else:                    
+                        tq = task.ex_time + cumsum
+                if tq > task.deadline:
+                    print('No es programable')
+                    return False
+        if verbose:
+            print('Número de iteraciones:', n_iteration)
+            print('Numero de funciones techo:', ceil_count)
+
+
 
     def hyperperiod(self):
         return lcm.reduce([x.period for x in self._tasks])
@@ -95,7 +129,6 @@ class Rate_Monotonic():
     @ticks.setter
     def ticks(self, ticks):
         self._ticks = ticks
-
 
 class Task():
 
@@ -144,6 +177,6 @@ if __name__ == '__main__':
         print('Factor de utilización:', system.utilization_factor())
         print('Cota de Liu:', system.liu_layland()[1])
         print('Cota de Bini:', system.bini()[1])    
-        system.rta(verbose=True)
+        system.rta2(verbose=True)
         
 
