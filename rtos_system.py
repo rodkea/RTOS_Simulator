@@ -66,8 +66,7 @@ class Rate_Monotonic():
         n_iteration = 0 # Contador de iteraciones
         ceil_count = 0  # Contador de funciones techo.       
         for n, task in enumerate(self._tasks):
-            tq = 0 # Tiempo actual
-                       
+            tq = 0 # Tiempo actual            
             print('Task:',n+1) 
             if n == 0:
                 print('PF:',task.ex_time)
@@ -215,67 +214,67 @@ class Rate_Monotonic():
     
         return lcm.reduce([x.period for x in self._tasks])
     
-    def empty_slot(self, slot_size : int, verbose : bool = False) -> int:
-        '''
-        Devuelve el instante de tiempo donde se encuentra
-        una ranura vacia de tamaño 'slot_size'.
-        '''        
-        a_coeff = [task.ex_time for task in self._tasks]
-        t_valid = [-1 for task in self._tasks]
-        tq = slot_size
-        while True:
-            cumsum = 0
-            for n, task in enumerate(self._tasks):
-                if tq > t_valid[i]:
-                    ceil_calc = ceil(tq / task.period)
-                    a = ceil_calc * task.ex_time
-                    cumsum += a
-                    t_valid[i] = ceil_calc * task.period
-                    if a_coeff[i] < a:
-                        a_coeff[i] = a
-                        tq += a - a_coeff[n]
-        # for n, task in enumerate(self._tasks):
-        #     a_coeff = [task.ex_time for task in self._tasks]
-        #     t_valid = [-1 for task in self._tasks]                         
-        #     print('Task:',n+1)
-        #     if n == 0:
-                tq = task.ex_time
-                print('PF:',task.ex_time)
-            else:
-                tq += task.ex_time
-                while tq <= task.deadline:
-                    cumsum = 0
-                    n_iteration += 1                 
-                    for i in range(n):
-                        if tq > t_valid[i]:
-                            ceil_count += 1
-                            ceil_calc = ceil(tq / self._tasks[i].period)
-                            a =  ceil_calc * self._tasks[i].ex_time
-                            cumsum += a
-                            t_valid[i] = ceil_calc * self._tasks[i].period
-                            if a_coeff[i] < a:                            
-                                a_coeff[i] = a                            
-                                tq += a - a_coeff[n] 
-                        else:
-                            cumsum += a_coeff[i]
+    # def empty_slot(self, slot_size : int, verbose : bool = False) -> int:
+    #     '''
+    #     Devuelve el instante de tiempo donde se encuentra
+    #     una ranura vacia de tamaño 'slot_size'.
+    #     '''        
+    #     a_coeff = [task.ex_time for task in self._tasks]
+    #     t_valid = [-1 for task in self._tasks]
+    #     tq = slot_size
+    #     while True:
+    #         cumsum = 0
+    #         for n, task in enumerate(self._tasks):
+    #             if tq > t_valid[i]:
+    #                 ceil_calc = ceil(tq / task.period)
+    #                 a = ceil_calc * task.ex_time
+    #                 cumsum += a
+    #                 t_valid[i] = ceil_calc * task.period
+    #                 if a_coeff[i] < a:
+    #                     a_coeff[i] = a
+    #                     tq += a - a_coeff[n]
+    #     # for n, task in enumerate(self._tasks):
+    #     #     a_coeff = [task.ex_time for task in self._tasks]
+    #     #     t_valid = [-1 for task in self._tasks]                         
+    #     #     print('Task:',n+1)
+    #     #     if n == 0:
+    #             tq = task.ex_time
+    #             print('PF:',task.ex_time)
+    #         else:
+    #             tq += task.ex_time
+    #             while tq <= task.deadline:
+    #                 cumsum = 0
+    #                 n_iteration += 1                 
+    #                 for i in range(n):
+    #                     if tq > t_valid[i]:
+    #                         ceil_count += 1
+    #                         ceil_calc = ceil(tq / self._tasks[i].period)
+    #                         a =  ceil_calc * self._tasks[i].ex_time
+    #                         cumsum += a
+    #                         t_valid[i] = ceil_calc * self._tasks[i].period
+    #                         if a_coeff[i] < a:                            
+    #                             a_coeff[i] = a                            
+    #                             tq += a - a_coeff[n] 
+    #                     else:
+    #                         cumsum += a_coeff[i]
                                                            
-                    if tq == task.ex_time + cumsum:                        
-                        print('PF:',tq)                                                            
-                        break
-                    else:                    
-                        tq = task.ex_time + cumsum
-                if tq > task.deadline:
-                    print('No es programable')
-                    return False
+    #                 if tq == task.ex_time + cumsum:                        
+    #                     print('PF:',tq)                                                            
+    #                     break
+    #                 else:                    
+    #                     tq = task.ex_time + cumsum
+    #             if tq > task.deadline:
+    #                 print('No es programable')
+    #                 return False
 
         
 
 class Task():
 
     def __init__(self, ex_time : int, period : int, deadline : int):
-        self._ex_time = ex_time
-        self._period = period
-        self._deadline = deadline        
+        self._ex_time = ex_time # Tiempo de ejecución
+        self._period = period # Periodo
+        self._deadline = deadline # Vencimiento        
 
     @property
     def ex_time(self):
