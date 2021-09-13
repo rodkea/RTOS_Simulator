@@ -23,14 +23,14 @@ class Rate_Monotonic():
         el mínimo común múltiplo entre todos los períodos
         de las tareas del sistema.
         '''
-        return lcm.reduce([x.period for x in self._tasks])
+        return lcm.reduce([x.period for x in self.tasks])
 
     def utilization_factor(self) -> float:
         '''
         Calcula el factor de utilización del sistema.
         '''        
         u = 0 # Factor de utilización
-        for task in self._tasks:
+        for task in self.tasks:
             u += task.ex_time / task.period # Ci / Ti
         return round(u, 15) # Redonde para mejorar visualización
 
@@ -40,7 +40,7 @@ class Rate_Monotonic():
         el primer elemento True si cumple la cota, False de lo contrario. El segundo elemento devuelve
         el valor numerico resultante del calculo de la cota.
         '''               
-        n = len(self._tasks) # Número de tareas
+        n = len(self.tasks) # Número de tareas
         test_condition = n * (2 ** (1/n) - 1) # Cálculo de la cota
         return [self.utilization_factor() <= test_condition, test_condition] # (Condición de la cota, cálculo)
 
@@ -51,7 +51,7 @@ class Rate_Monotonic():
         el valor numerico resultante del calculo de la cota.               
         '''        
         u = 1 # Inicializo con 1 para la productoria
-        for task in self._tasks:
+        for task in self.tasks:
             u *= (task.ex_time / task.period) + 1 
         return [u <= 2, u] 
 
@@ -65,7 +65,7 @@ class Rate_Monotonic():
         '''
         n_iteration = 0 # Contador de iteraciones
         ceil_count = 0  # Contador de funciones techo.       
-        for n, task in enumerate(self._tasks):
+        for n, task in enumerate(self.tasks):
             tq = 0 # Tiempo actual            
             print('Task:',n+1) 
             if n == 0:
@@ -76,7 +76,7 @@ class Rate_Monotonic():
                     n_iteration += 1                 
                     for i in range(n):
                         ceil_count += 1
-                        cumsum += ceil(tq / self._tasks[i].period) * self._tasks[i].ex_time                                    
+                        cumsum += ceil(tq / self.tasks[i].period) * self.tasks[i].ex_time                                    
                     if tq == task.ex_time + cumsum:
                         print('PF:',tq)                                                            
                         break
@@ -92,7 +92,7 @@ class Rate_Monotonic():
 
     def rta(self, verbose : bool=False) -> bool:
         '''
-        Cálculo del Test de planificabilidad de por RTA
+        Cálculo del Test de planificabilidad por RTA
         Imprime en pantalla el peor tiempo de respuesta de cada tarea. 
         Devuelve True si es planificable, False de lo contrario.
         Si se especifica verbose = True imprime en pantalla el número de 
@@ -102,7 +102,7 @@ class Rate_Monotonic():
         ceil_count = 0 #Contador de funciones techo
         tq = 0 # Tiempo actual
                  
-        for n, task in enumerate(self._tasks):                        
+        for n, task in enumerate(self.tasks):                        
             print('Task:',n+1)
             if n == 0:
                 tq = task.ex_time
@@ -114,7 +114,7 @@ class Rate_Monotonic():
                     n_iteration += 1                 
                     for i in range(n):
                         ceil_count += 1
-                        cumsum += ceil(tq / self._tasks[i].period) * self._tasks[i].ex_time                                    
+                        cumsum += ceil(tq / self.tasks[i].period) * self.tasks[i].ex_time                                    
                     if tq == task.ex_time + cumsum:
                         print('PF:',tq)                                                            
                         break
@@ -128,19 +128,19 @@ class Rate_Monotonic():
             print('Numero de funciones techo:', ceil_count)
         return True
 
-    def rta2(self, verbose : bool=False) -> None:
+    def rta2(self, verbose : bool=False) -> bool:
         '''
-        Cálculo del Test de planificabilidad de por RTA 2
+        Cálculo del Test de planificabilidad por RTA 2
         Imprime en pantalla el peor tiempo de respuesta de cada tarea. 
         Devuelve True si es planificable, False de lo contrario.
         Si se especifica verbose = True imprime en pantalla el número de 
         iteraciones y funciones techo utilizadas.
         '''
         n_iteration = 0 # Contador de iteraciones
-        ceil_count = 0 #Contador de funciones techo
+        ceil_count = 0 # Contador de funciones techo
         tq = 0 # Tiempo actual
-        a_coeff = [task.ex_time for task in self._tasks]                                
-        for n, task in enumerate(self._tasks):
+        a_coeff = [task.ex_time for task in self.tasks] # Coeficientes Ai                               
+        for n, task in enumerate(self.tasks):
                                     
             print('Task:',n+1)
             if n == 0:
@@ -149,13 +149,13 @@ class Rate_Monotonic():
             else:
                 tq += task.ex_time
                 while tq <= task.deadline:
-                    cumsum = 0
+                    cumsum = 0 # Valor de las sumatorias con funciones techo
                     n_iteration += 1                 
                     for i in range(n):
                         ceil_count += 1
-                        a = ceil(tq / self._tasks[i].period) * self._tasks[i].ex_time
+                        a = ceil(tq / self.tasks[i].period) * self.tasks[i].ex_time
                         cumsum += a
-                        if a_coeff[i] < a:                            
+                        if a_coeff[i] < a:                             
                             a_coeff[i] = a                            
                             tq += a - a_coeff[n]                                    
                     if tq == task.ex_time + cumsum:                        
@@ -171,13 +171,20 @@ class Rate_Monotonic():
             print('Numero de funciones techo:', ceil_count) 
         return True
 
-    def rta3(self, verbose : bool=False) -> None:
-        n_iteration = 0
-        tq = 0
-        ceil_count = 0                         
-        for n, task in enumerate(self._tasks):
-            a_coeff = [task.ex_time for task in self._tasks]
-            t_valid = [-1 for task in self._tasks]                         
+    def rta3(self, verbose : bool=False) -> bool:
+        '''
+        Cálculo del Test de planificabilidad por RTA 3
+        Imprime en pantalla el peor tiempo de respuesta de cada tarea. 
+        Devuelve True si es planificable, False de lo contrario.
+        Si se especifica verbose = True imprime en pantalla el número de 
+        iteraciones y funciones techo utilizadas.
+        '''
+        n_iteration = 0 # Contador de iteraciones        
+        ceil_count = 0 # Contador de funciones techo
+        tq = 0 # Tiempo actaul
+        a_coeff = [task.ex_time for task in self.tasks] # Coeficientes Ai                         
+        for n, task in enumerate(self.tasks):            
+            t_valid = [-1 for task in self.tasks] # Periodos de valides (inicialización -1)                        
             print('Task:',n+1)
             if n == 0:
                 tq = task.ex_time
@@ -190,10 +197,10 @@ class Rate_Monotonic():
                     for i in range(n):
                         if tq > t_valid[i]:
                             ceil_count += 1
-                            ceil_calc = ceil(tq / self._tasks[i].period)
-                            a =  ceil_calc * self._tasks[i].ex_time
+                            ceil_calc = ceil(tq / self.tasks[i].period)
+                            a =  ceil_calc * self.tasks[i].ex_time
                             cumsum += a
-                            t_valid[i] = ceil_calc * self._tasks[i].period
+                            t_valid[i] = ceil_calc * self.tasks[i].period
                             if a_coeff[i] < a:                            
                                 a_coeff[i] = a                            
                                 tq += a - a_coeff[n] 
@@ -211,63 +218,39 @@ class Rate_Monotonic():
         if verbose:
             print('Número de iteraciones:', n_iteration)
             print('Numero de funciones techo:', ceil_count)
-    
-        return lcm.reduce([x.period for x in self._tasks])
-    
-    # def empty_slot(self, slot_size : int, verbose : bool = False) -> int:
-    #     '''
-    #     Devuelve el instante de tiempo donde se encuentra
-    #     una ranura vacia de tamaño 'slot_size'.
-    #     '''        
-    #     a_coeff = [task.ex_time for task in self._tasks]
-    #     t_valid = [-1 for task in self._tasks]
-    #     tq = slot_size
-    #     while True:
-    #         cumsum = 0
-    #         for n, task in enumerate(self._tasks):
-    #             if tq > t_valid[i]:
-    #                 ceil_calc = ceil(tq / task.period)
-    #                 a = ceil_calc * task.ex_time
-    #                 cumsum += a
-    #                 t_valid[i] = ceil_calc * task.period
-    #                 if a_coeff[i] < a:
-    #                     a_coeff[i] = a
-    #                     tq += a - a_coeff[n]
-    #     # for n, task in enumerate(self._tasks):
-    #     #     a_coeff = [task.ex_time for task in self._tasks]
-    #     #     t_valid = [-1 for task in self._tasks]                         
-    #     #     print('Task:',n+1)
-    #     #     if n == 0:
-    #             tq = task.ex_time
-    #             print('PF:',task.ex_time)
-    #         else:
-    #             tq += task.ex_time
-    #             while tq <= task.deadline:
-    #                 cumsum = 0
-    #                 n_iteration += 1                 
-    #                 for i in range(n):
-    #                     if tq > t_valid[i]:
-    #                         ceil_count += 1
-    #                         ceil_calc = ceil(tq / self._tasks[i].period)
-    #                         a =  ceil_calc * self._tasks[i].ex_time
-    #                         cumsum += a
-    #                         t_valid[i] = ceil_calc * self._tasks[i].period
-    #                         if a_coeff[i] < a:                            
-    #                             a_coeff[i] = a                            
-    #                             tq += a - a_coeff[n] 
-    #                     else:
-    #                         cumsum += a_coeff[i]
-                                                           
-    #                 if tq == task.ex_time + cumsum:                        
-    #                     print('PF:',tq)                                                            
-    #                     break
-    #                 else:                    
-    #                     tq = task.ex_time + cumsum
-    #             if tq > task.deadline:
-    #                 print('No es programable')
-    #                 return False
+        return True
 
-        
+    def empty_slot(self, slot_size : int, verbose : bool = False) -> int:
+        '''
+        Devuelve el instante de tiempo donde se encuentra
+        una ranura vacia de tamaño 'slot_size'.
+        ''' 
+        tq = slot_size # Tiempo actual       
+        if self.utilization_factor() < 1: # Chequeo que el sistema no este saturado.
+            while True:
+                    cumsum = 0 # Valor de las sumatorias con funciones techo                                  
+                    for task in self.tasks:                        
+                        cumsum += ceil(tq / task.period) * task.ex_time                                    
+                    if tq == slot_size + cumsum:                                                                                    
+                        break
+                    else:                    
+                        tq = slot_size + cumsum
+        return tq - slot_size # Instante de primera ranura vacia 
+
+    def slack(self) -> int:
+        '''
+        Devuelve el slack disponible del sistema.
+        '''
+        work_load = 0 # Carga de trabajo
+        hyperperiod = self.hyperperiod() 
+        for task in self.tasks:
+            work_load += (hyperperiod / task.period) * task.ex_time
+        slack = hyperperiod - work_load
+        return slack
+
+    @property
+    def tasks(self):
+        return self._tasks    
 
 class Task():
 
@@ -318,6 +301,8 @@ if __name__ == '__main__':
         print('Cota de Liu:', system.liu_layland()[1])
         print('Cota de Bini:', system.bini()[1])    
         system.rta2(verbose=True)
+    system = Rate_Monotonic([Task(2,4,4), Task(1,5,5), Task(1,8,8)])
+    print(system.slack())
         
         
 
