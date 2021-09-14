@@ -9,7 +9,7 @@ class Rate_Monotonic():
         Inicializa el sistema con el conjunto de tareas
         ingresadas como argumento
         '''       
-        self._tasks = tasks
+        self._tasks = tasks  
 
     def add_task(self, task):
         '''
@@ -248,6 +248,34 @@ class Rate_Monotonic():
         slack = hyperperiod - work_load
         return slack
 
+    def find_ki(self, verbose : str = False) -> int:
+        '''
+        Devuelve el numero máximo "k" de inversiones que tolera el sistema.
+        Si Verbose = True imprime el k de cada tarea
+        '''
+        ki = [] # Lista de los Ki de cada tarea
+        for n, task in enumerate(self.tasks):
+            tq = 0 # Tiempo actual            
+            k = 1 # Inicio con k = 1
+            print('Task', n)
+            while tq <= task.deadline: # Mientras sea menor o igual que el vencimiento de la tarea
+                cumsum = 0 # Suma de cargas de trabajo                
+                for i in range(n):
+                    cumsum += ceil(tq / self.tasks[i].period) * self.tasks[i].ex_time
+                if tq == k + task.ex_time + cumsum: # Si encuentro punto fijo
+                    k += 1 # Incremento k
+                    tq = 0 # Reinicio el contador temporal                    
+                else: # Si no hay punto fijo 
+                    tq = k + task.ex_time + cumsum # Incremento el tiempo
+            ki.append(k - 1) # Agrego el k de la tarea
+        if verbose:
+            for n, k in enumerate(ki, start= 1):
+                print(f'K de la Tarea {n} = {k}')
+        return min(ki)
+            
+
+
+            
     @property
     def tasks(self):
         return self._tasks    
@@ -301,8 +329,8 @@ if __name__ == '__main__':
         print('Cota de Liu:', system.liu_layland()[1])
         print('Cota de Bini:', system.bini()[1])    
         system.rta2(verbose=True)
-    system = Rate_Monotonic([Task(2,4,4), Task(1,5,5), Task(1,8,8)])
-    print(system.slack())
+    system = Rate_Monotonic([Task(1,3,3), Task(1,4,4), Task(1,6,6)])
+    print(system.find_ki(verbose=True))
         
         
 
