@@ -400,8 +400,7 @@ if __name__ == '__main__':
         for n, tasks in enumerate(ex_tasks):
             print(f'Ejercicio {n+1}'.center(30,'-'))
             print() 
-            system = Rate_Monotonic(tasks)
-            system.find_ki(verbose = True)
+            system = Rate_Monotonic(tasks)            
             print()            
             capacidades = system.polling_server_bound()
             if capacidades != None:
