@@ -331,7 +331,6 @@ class Rate_Monotonic():
     def tasks(self):
         return self._tasks    
 
-
 class Task():
 
     def __init__(self, ex_time : int, period : int, deadline : int):
@@ -367,8 +366,6 @@ class Aperiodic_Task():
     def __init__(self, call_time , ex_time : int):
         self._call_time = call_time # Tiempo de llamada
         self._ex_time = ex_time # Tiempo de ejecución
-          
-
 
 if __name__ == '__main__':
     TP = 2
